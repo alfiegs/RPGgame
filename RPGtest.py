@@ -127,7 +127,9 @@ def main():
     bear = Bear("bear", 20, 0, 100)
 
 
-    while goblin.alive() and medic.alive() and hero.alive() and gg.alive() and bear.alive():
+    while hero.alive():
+        print(" ")
+        print(" ")
         print("*******************************************")
         print("~~~~~YOUR ENEMIES LIE BEFORE YOU! IF YOU COLLECT 30 COINS, YOU WIN!")
         print("*******************************************")
@@ -159,6 +161,8 @@ def main():
             '''
         )
         print("> ", end=' ')
+        print(" ")
+        print("NEW MESSAGE>>")
         raw_input = input()
         if raw_input == "1":
             # Hero attacks goblin
@@ -172,10 +176,15 @@ def main():
 
         elif raw_input == "2":
             # Hero attacks medic
-            hero.attack(medic)
-            medic.medic_move()
-            if medic.health < 0:
-                print("Enemy is dead.")
+            if medic.health > 0:
+                hero.attack(medic)
+                medic.medic_move()
+            if medic.health <= 0:
+                hero.coins = hero.coins + 10
+                bear.alive = False
+            if bear.alive == False:
+                print("You have already taken a life! How much more blood do you want?")
+                hero.coins = hero.coins - 10
         elif raw_input == "3":
             # Hero attacks zombie
             hero.attack(zombie)
@@ -186,8 +195,15 @@ def main():
             gg.gg_move(hero)
         elif raw_input == "5":
             # Hero attacks a bear
-            hero.attack(bear)
-            bear.bear_move(hero)
+            if bear.health > 0:
+                hero.attack(bear)
+                bear.bear_move(hero)
+            if bear.health <= 0:
+                hero.coins = hero.coins + 100
+                bear.alive = False
+            if bear.alive == False:
+                print("You killed him already! Stop beating a dead bear!")
+                hero.coins = hero.coins - 100
         elif raw_input == "8":
             # Hero does nothing
             pass

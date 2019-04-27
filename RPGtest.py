@@ -34,8 +34,9 @@ class Character:
 
 
     def print_status(self):
-        print(">> {} has {} health left. He has {} coins on him.".format(self.name, self.health, self.coins))
+        print("         >> {} has {} health left. He has {} coins on him.".format(self.name, self.health, self.coins))
 
+    
 
 
 class Hero(Character):
@@ -50,6 +51,30 @@ class Hero(Character):
         if enemy.health > 0:
             self.health -= enemy.power
 
+    def store_menu(self, hero):
+        print('''
+                                      Welcome to WalMart!
+
+                                We are short on supplies right now,
+                                but here is a list of what we do have:
+                                ||===============================||
+                                || 1. Potion - Adds 100 Health   ||
+                                || 2. Power Up - Adds 10 power   ||
+
+        ''')
+        store_choice = input()
+        if store_choice == "1":
+            if hero.coins >= 10:
+                hero.health = hero.health + 100
+                hero.coins = hero.coins - 10
+                print("You bought a potion! Thanks for shopping at WalMart!")
+            if hero.coins < 10:
+                print("Sorry, you doing have the cash for this.")
+        if store_choice == "2":
+            hero.power = hero.power + 10
+            print("You bought a power up! Thanks for shopping at WalMart!")
+
+
 
 
 class Goblin(Character):
@@ -58,6 +83,8 @@ class Goblin(Character):
         self.health = health
         self.power = power
         self.coins = coins
+
+
 
 
 
@@ -117,61 +144,73 @@ class Bear(Character):
 
 
 
-
 def main():
     hero = Hero("Hero", 100, 5, 0)
-    goblin = Goblin("Goblin", 100, 2, 5)
-    medic = Medic("Medic", 100, 2, 10)
+    goblin = Goblin("Goblin", 1, 2, 5)
+    medic = Medic("Medic", 1, 2, 10)
     zombie = Character("Zombo", 2, 1, 15)
-    gg = GoldenGun("The Man With The Golden Gun", 100, 0, 20)
+    gg = GoldenGun("The Man With The Golden Gun", 10, 0, 20)
     bear = Bear("bear", 20, 0, 100)
 
 
-    while hero.alive():
-        print(" ")
-        print(" ")
-        print("*******************************************")
-        print("~~~~~YOUR ENEMIES LIE BEFORE YOU! IF YOU COLLECT 30 COINS, YOU WIN!")
-        print("*******************************************")
-        print("")
-        print("Study your enemy. Choose your battles wisely!")
-        print("")
+    while hero.alive() and hero.coins >= 0:
+        print('''
+        *******************************************
+
+
+    
+        *******************************************
+                YOUR ENEMIES LIE BEFORE YOU!"
+        *******************************************
+        
+        Study your enemy. Choose your battles wisely!
+        
+
+        ''')
         hero.print_status()
         goblin.print_status()
         medic.print_status()
         zombie.print_status()
         gg.print_status()
         bear.print_status()
-        print("*******************************************")
+        print('''
+        
+        *******************************************
 
-        print("")
-        print("What's your move Hero? Are you as brave as they say??")
-        print("")
-        print("1. Fight the goblin")
-        print("2. Fight the medic")
-        print("3. Fight the zombie")
-        print("4. Fight The Man With The Golden Gun")
-        print("5. Fight a bear")
-        print("...")
-        print("8. Do nothing (scared??)")
-        print("9. Flee (coward!)")
-        print(
-            '''
+        What's your move Hero? Are you as brave as they say??
 
-            '''
-        )
-        print("> ", end=' ')
-        print(" ")
-        print("NEW MESSAGE>>")
+        1. Fight the goblin"
+        2. Fight the medic"
+        3. Fight the zombie"
+        4. Fight The Man With The Golden Gun"
+        5. Fight a bear"
+        6. Enter the store"
+        ...
+        8. Do nothing (scared??)"
+        9. Flee (coward!)"
+        
+
+        
+        
+        ''')
+
+        #GAME PLAY STARTS HERE
         raw_input = input()
         if raw_input == "1":
             # Hero attacks goblin
-            if random.random() < 0.2:
-                hero.hero_attack(goblin)
-            else:
-                hero.attack(goblin)
-            if goblin.health < 0:
+            if goblin.health > 0:
+                if random.random() < 0.2:
+                    hero.hero_attack(goblin)
+                else:
+                    hero.attack(goblin)
+            if goblin.health <= 0:
+                hero.coins = hero.coins + 5
+                goblin.coins = 0
                 print("Enemy is dead.")
+                goblin.alive = False
+            if goblin.alive == False:
+                hero.coins = hero.coins - 5
+                print("You have already taken a life! How much more blood do you want?")
             # Hero does nothing
 
         elif raw_input == "2":
@@ -181,29 +220,48 @@ def main():
                 medic.medic_move()
             if medic.health <= 0:
                 hero.coins = hero.coins + 10
-                bear.alive = False
-            if bear.alive == False:
+                medic.coins = 0
+                medic.alive = False
+            if medic.alive == False:
                 print("You have already taken a life! How much more blood do you want?")
                 hero.coins = hero.coins - 10
         elif raw_input == "3":
             # Hero attacks zombie
-            hero.attack(zombie)
-            hero.health = hero.health - zombie.power
+            # zombie doesn't die
+            if zombie.health > 0:
+                hero.attack(zombie)
+                hero.health = hero.health - zombie.power
+            if zombie.health < 0:
+                print("Fool! Zombies don't die! You shall never take his coins!")
         elif raw_input == "4":
             # Hero attacks the Man With The Golden Gun
-            hero.attack(gg)
-            gg.gg_move(hero)
+            # GG has 20% chance of killing Hero immediately
+            if gg.health > 0:
+                hero.attack(gg)
+                gg.gg_move(hero)
+            if gg.health <= 0:
+                hero.coins = hero.coins + 20
+                gg.coins = 0
+                gg.alive = False
+            if gg.alive == False:
+                print("You have already taken a life! How much more blood do you want?")
+                hero.coins = hero.coins - 20
         elif raw_input == "5":
             # Hero attacks a bear
+            # Bear gives Hero 10 health every time Hero attacks and screams when attacked
             if bear.health > 0:
                 hero.attack(bear)
                 bear.bear_move(hero)
             if bear.health <= 0:
                 hero.coins = hero.coins + 100
+                bear.coins = 0
                 bear.alive = False
             if bear.alive == False:
                 print("You killed him already! Stop beating a dead bear!")
                 hero.coins = hero.coins - 100
+        elif raw_input == "6":
+            # Enter the Store
+            hero.store_menu(hero)
         elif raw_input == "8":
             # Hero does nothing
             pass

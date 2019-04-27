@@ -23,13 +23,25 @@ class Character:
             return True
 
     def attack(self, enemy):
-        enemy.health -= self.power
+        #Attacker attacks
         if enemy.health > 0:
+            enemy.health -= self.power
+        #Enemy attacks back
             self.health -= enemy.power
-            print("You did {} damage to the enemy and took {} damage.".format(self.power, enemy.power))
+        #Print result of both attacks
+            print("     ||You did {} damage to the enemy and took {} damage.".format(self.power, enemy.power))
+        #Take enemy coins once they are dead
         if enemy.health <= 0:
-            self.coins += enemy.coins
-            print("You stole {} of your enemy's coins!".format(enemy.coins))
+            enemy.health = 0 #Display 0 rather than negative number
+            self.coins += enemy.coins #Add enemy coins to attacker coins
+            if enemy.coins > 0:
+                print("     ||You stole {} of your enemy's coins!".format(enemy.coins))
+            else:
+                print("     ||He has no more money, you've taken it all.")
+            enemy.coins = 0 #Reduce enemy coins to 0
+            enemy.alive = False
+
+
 
 
 
@@ -153,7 +165,7 @@ def main():
     bear = Bear("bear", 20, 0, 100)
 
 
-    while hero.alive() and hero.coins >= 0:
+    while hero.alive():
         print('''
         *******************************************
 
@@ -179,15 +191,15 @@ def main():
 
         What's your move Hero? Are you as brave as they say??
 
-        1. Fight the goblin"
-        2. Fight the medic"
-        3. Fight the zombie"
-        4. Fight The Man With The Golden Gun"
-        5. Fight a bear"
-        6. Enter the store"
+        1. Fight the goblin
+        2. Fight the medic
+        3. Fight the zombie
+        4. Fight The Man With The Golden Gun
+        5. Fight a bear
+        6. Enter the store
         ...
-        8. Do nothing (scared??)"
-        9. Flee (coward!)"
+        8. Do nothing (scared??)
+        9. Flee (coward!)
         
 
         
@@ -198,39 +210,39 @@ def main():
         raw_input = input()
         if raw_input == "1":
             # Hero attacks goblin
-            if goblin.health > 0:
-                if random.random() < 0.2:
-                    hero.hero_attack(goblin)
-                else:
-                    hero.attack(goblin)
-            if goblin.health <= 0:
-                hero.coins = hero.coins + 5
-                goblin.coins = 0
-                print("Enemy is dead.")
-                goblin.alive = False
-            if goblin.alive == False:
-                hero.coins = hero.coins - 5
-                print("You have already taken a life! How much more blood do you want?")
-            # Hero does nothing
+            hero.attack(goblin)
+            # if goblin.health > 0:
+            #     if random.random() < 0.2:
+            #         hero.hero_attack(goblin)
+            #     else:
+            #         hero.attack(goblin)
+            # if goblin.health <= 0:
+            #     hero.coins = hero.coins + 5
+            #     goblin.coins = 0
+            #     print("Enemy is dead.")
+            #     goblin.alive = False
+            # if goblin.alive == False:
+            #     hero.coins = hero.coins - 5
+            #     print("You have already taken a life! How much more blood do you want?")
 
         elif raw_input == "2":
             # Hero attacks medic
-            if medic.health > 0:
-                hero.attack(medic)
-                medic.medic_move()
-            if medic.health <= 0:
-                hero.coins = hero.coins + 10
-                medic.coins = 0
-                medic.alive = False
-            if medic.alive == False:
-                print("You have already taken a life! How much more blood do you want?")
-                hero.coins = hero.coins - 10
+            hero.attack(medic)
+            # if medic.health > 0:
+            #     hero.attack(medic)
+            #     medic.medic_move()
+            # if medic.health <= 0:
+            #     hero.coins = hero.coins + 10
+            #     medic.coins = 0
+            #     medic.alive = False
+            # if medic.alive == False:
+            #     print("You have already taken a life! How much more blood do you want?")
+            #     hero.coins = hero.coins - 10
         elif raw_input == "3":
             # Hero attacks zombie
             # zombie doesn't die
-            if zombie.health > 0:
-                hero.attack(zombie)
-                hero.health = hero.health - zombie.power
+            zombie.health = zombie.health - hero.power
+            hero.health = hero.health - zombie.power
             if zombie.health < 0:
                 print("Fool! Zombies don't die! You shall never take his coins!")
         elif raw_input == "4":
